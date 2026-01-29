@@ -1,0 +1,7 @@
+# SSL certificates placeholder
+# Place your SSL certificates here:
+# - fullchain.pem (certificate chain)
+# - privkey.pem (private key)
+
+# For Let's Encrypt, run:
+# certbot certonly --webroot -w /var/www/certbot -d arnostack.top -d www.arnostack.top
