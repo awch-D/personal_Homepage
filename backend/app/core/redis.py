@@ -92,15 +92,15 @@ class CostMetrics:
         await self.redis.expire(key, 86400 * 30)  # 30 days expiry
     
     async def get_daily_stats(self, metric: str, days: int = 7) -> dict:
-        """Get stats for last N days"""
+        """Get stats for last N days using batch fetch"""
         from datetime import date, timedelta
-        stats = {}
-        for i in range(days):
-            d = (date.today() - timedelta(days=i)).isoformat()
-            key = f"metrics:{metric}:daily:{d}"
-            value = await self.redis.get(key)
-            stats[d] = int(value) if value else 0
-        return stats
+        
+        dates = [(date.today() - timedelta(days=i)).isoformat() for i in range(days)]
+        keys = [f"metrics:{metric}:daily:{d}" for d in dates]
+        
+        values = await self.redis.mget(keys)
+        
+        return {d: int(v) if v else 0 for d, v in zip(dates, values)}
     
     async def get_today_count(self, metric: str) -> int:
         """Get today's count"""

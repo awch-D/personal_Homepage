@@ -8,7 +8,7 @@ export default function Header() {
             <nav className="max-w-[1200px] w-full flex items-center justify-between glass-card px-6 py-3 rounded-full border-white/5 bg-black/40">
                 <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary">terminal</span>
-                    <span className="font-bold tracking-tighter text-lg uppercase">ARCHITECT_V2</span>
+                    <span className="font-bold tracking-tighter text-lg uppercase">ARCHITECT</span>
                 </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium opacity-80">
                     <Link href="#" className="hover:text-primary transition-colors">Nodes</Link>

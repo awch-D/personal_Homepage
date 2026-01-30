@@ -18,7 +18,7 @@ export default function HeroCard() {
                             {profile.name.split(' ')[0]}<br />{profile.name.split(' ').slice(1).join(' ')}
                         </>
                     ) : (
-                        <>ALEX<br />RIVERA</>
+                        <>STEVE<br />ARNO</>
                     )}
                 </h1>
                 <p className="text-xl text-white/60 max-w-md font-light leading-relaxed">

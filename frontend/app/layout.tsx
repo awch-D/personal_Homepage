@@ -2,8 +2,11 @@ import './globals.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'Arno - AI Engineer',
+    title: '量子裂隙',
     description: 'Personal homepage with AI-powered chat assistant',
+    icons: {
+        icon: '/favicon.svg',
+    },
 }
 
 import { LanguageProvider } from '@/contexts/LanguageContext'

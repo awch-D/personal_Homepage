@@ -20,7 +20,7 @@ export default function Footer() {
                 </Link>
             </div>
             <div className="text-center md:text-right flex flex-col items-center md:items-end gap-2">
-                <p className="text-[10px] opacity-30 font-mono">BUILT_ON_SUBSTRATE_V2.0 // © 2024 ALEX_RIVERA_ARCHITECT</p>
+                <p className="text-[10px] opacity-30 font-mono">BUILT_ON_SUBSTRATE_V2.0 // © 2026 STEVE_ARNO_ARCHITECT</p>
                 <p className="text-[10px] text-primary font-mono tracking-tighter uppercase">Available for architectural consultation & strategic AI development</p>
                 <a
                     href="https://beian.miit.gov.cn/"

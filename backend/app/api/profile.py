@@ -43,7 +43,7 @@ class CurrentFocus(BaseModel):
 @router.get("/info", response_model=ProfileInfo)
 async def get_profile_info():
     return {
-        "name": "ALEX RIVERA", # Keeping content from code.html for fidelity
+        "name": "STEVE ARNO", # Updated for individual identity
         "title": "ROOT_USER", 
         "bio": "Engineering the next generation of neural interfaces and high-performance decentralized systems.",
         "avatar_url": "/images/avatar.png", # Placeholder
@@ -61,7 +61,9 @@ async def get_github_activity():
 @router.get("/tech-stack", response_model=List[TechStackItem])
 async def get_tech_stack():
     return [
+        {"name": "Java", "icon": "coffee", "highlight": False, "description": "Enterprise Backend"},
         {"name": "Python", "icon": "api", "highlight": False, "description": "Backend & AI"},
+        {"name": "Dify", "icon": "hub", "highlight": True, "description": "LLM Orchestration"},
         {"name": "PyTorch", "icon": "deployed_code", "highlight": True, "description": "Neural Networks"},
         {"name": "React", "icon": "data_object", "highlight": False, "description": "Frontend Interface"},
         {"name": "PostgreSQL", "icon": "database", "highlight": False, "description": "Data Persistence"}

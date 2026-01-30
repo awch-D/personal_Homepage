@@ -1,6 +1,7 @@
 """
 Admin API endpoints
 """
+import asyncio
 from datetime import timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
@@ -34,7 +35,10 @@ class LoginRequest(BaseModel):
 @router.get("/captcha")
 async def get_captcha():
     """Generate captcha"""
-    captcha_id, code, image_base64 = captcha_service.generate()
+    # Run blocking image generation in a thread pool to avoid blocking the event loop
+    loop = asyncio.get_running_loop()
+    captcha_id, code, image_base64 = await loop.run_in_executor(None, captcha_service.generate)
+    
     await captcha_service.save_code(captcha_id, code)
     # The image is already a data URI
     return {"captcha_id": captcha_id, "image": image_base64}
@@ -189,6 +193,40 @@ async def get_health_status(admin: dict = Depends(get_current_admin)):
         health["overall"] = "degraded"
     
     return health
+
+
+@router.get("/dashboard/full")
+async def get_full_dashboard(admin: dict = Depends(get_current_admin)):
+    """Get all dashboard data in one request with caching"""
+    redis_client = await get_redis()
+    cache_key = "admin:dashboard:full"
+    
+    # Try cache first
+    cached = await redis_client.get(cache_key)
+    if cached:
+        return json.loads(cached)
+    
+    # Parallelize data fetching
+    import asyncio
+    
+    overview_task = get_dashboard_overview(admin)
+    metrics_task = get_dashboard_metrics(7, admin)
+    health_task = get_health_status(admin)
+    
+    overview, metrics, health = await asyncio.gather(
+        overview_task, metrics_task, health_task
+    )
+    
+    full_data = {
+        "overview": overview,
+        "metrics": metrics,
+        "health": health
+    }
+    
+    # Cache for 60 seconds
+    await redis_client.setex(cache_key, 60, json.dumps(full_data))
+    
+    return full_data
 
 
 # ==================== Cache Management ====================

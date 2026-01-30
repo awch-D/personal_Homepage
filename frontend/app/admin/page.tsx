@@ -18,11 +18,9 @@ const fetcher = (url: string) => fetch(url).then(res => res.json())
 export default function AdminDashboard() {
     const { t } = useTranslation()
 
-    const { data: overview } = useSWR('/api/admin/dashboard/overview', fetcher, { revalidateOnFocus: false })
-    const { data: metrics } = useSWR('/api/admin/dashboard/metrics?days=7', fetcher, { revalidateOnFocus: false })
-    const { data: health } = useSWR('/api/admin/dashboard/health', fetcher, { revalidateOnFocus: false })
+    const { data: fullData } = useSWR('/api/admin/dashboard/full', fetcher, { revalidateOnFocus: false })
 
-    if (!overview || !metrics || !health) {
+    if (!fullData) {
         return <div className="animate-pulse space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[1, 2, 3, 4].map(i => (
@@ -31,6 +29,8 @@ export default function AdminDashboard() {
             </div>
         </div>
     }
+
+    const { overview, metrics, health } = fullData;
 
     // Transform metrics for charts
     const requestMetrics = {

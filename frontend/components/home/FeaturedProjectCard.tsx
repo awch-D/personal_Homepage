@@ -25,12 +25,12 @@ export default function FeaturedProjectCard() {
                     {project?.description || 'Real-time object detection model for autonomous underwater vehicles.'}
                 </p>
                 <div className="flex items-center justify-between">
-                    <div className="flex -space-x-1">
-                        <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-[10px]">code</span>
+                    <div className="flex gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-[16px]">code</span>
                         </div>
-                        <div className="w-6 h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-[10px]">analytics</span>
+                        <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-[16px]">analytics</span>
                         </div>
                     </div>
                     <span className="material-symbols-outlined text-primary hover:translate-x-1 transition-transform cursor-pointer">arrow_forward</span>

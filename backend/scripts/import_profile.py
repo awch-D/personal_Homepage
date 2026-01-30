@@ -164,8 +164,7 @@ async def main():
                     "专注于 AI 应用开发和系统架构设计"
                 ],
                 "contact": [
-                    "邮箱: arno@arnostack.top",
-                    "GitHub: github.com/arno"
+                    "邮箱: stevearno76@gmail.com",
                 ]
             },
             "projects": [
