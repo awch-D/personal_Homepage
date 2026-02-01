@@ -8,6 +8,8 @@ from app.core.config import get_settings
 from app.api.chat import router as chat_router
 from app.api.admin import router as admin_router
 from app.api.profile import router as profile_router
+from app.core.database import init_db
+from app.tasks.scheduler import init_scheduler, shutdown_scheduler
 
 settings = get_settings()
 
@@ -28,6 +30,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Lifecycle events
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database and scheduler on application startup"""
+    await init_db()
+    init_scheduler()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Shutdown scheduler on application shutdown"""
+    shutdown_scheduler()
 
 # Register routers
 app.include_router(chat_router)

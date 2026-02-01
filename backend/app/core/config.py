@@ -16,8 +16,11 @@ class Settings(BaseSettings):
     
     # API Keys
     DASHSCOPE_API_KEY: str = ""
-    LLM_API_BASE: str = "http://localhost:8317"
+    LLM_API_BASE: str = "https://open.bigmodel.cn/api/paas/v4/"
     LLM_API_KEY: str = ""
+
+    # GitHub
+    GITHUB_TOKEN: str = ""
     
     # Admin
     ADMIN_USERNAME: str = "admin"

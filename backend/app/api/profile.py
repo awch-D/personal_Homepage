@@ -1,65 +1,151 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List, Optional
+"""
+Profile API Endpoints - Refactored Version
+"""
+from typing import List
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, desc
+import datetime
+
+from app.core.database import get_db
+from app.models.github import GitHubContribution, GitHubStats
+from app.tasks.github_sync import sync_github_contributions
+from app.schemas.profile import (
+    ProfileInfo,
+    GithubActivity,
+    TechStackItem,
+    FeaturedProject,
+    CurrentFocus,
+    SystemStatus
+)
 
 router = APIRouter()
 
-# Response Models
-class ProfileInfo(BaseModel):
-    name: str
-    title: str
-    bio: str
-    avatar_url: str
-    status: str
-
-class GithubActivity(BaseModel):
-    total_commits_year: int
-    uptime_reliability: float
-    # In a real app this might be a complex heatmap data structure
-    # For now we'll simulate the summary stats
-    active_sprint: str
-
-class TechStackItem(BaseModel):
-    name: str
-    icon: str # Material Symbol name
-    highlight: bool
-    description: Optional[str] = None
-
-class FeaturedProject(BaseModel):
-    title: str
-    description: str
-    image_url: str
-    stats: List[str] # e.g. ["99.2% Accuracy", "Real-time"]
-    tags: List[str] # e.g. ["computer_vision", "robotics"]
-
-class CurrentFocus(BaseModel):
-    topic: str
-    subtitle: str
-    progress: int # 0-100
-    efficiency: int # 0-100
-
-# Endpoints
 
 @router.get("/info", response_model=ProfileInfo)
 async def get_profile_info():
+    """Get basic profile information"""
     return {
-        "name": "STEVE ARNO", # Updated for individual identity
-        "title": "ROOT_USER", 
-        "bio": "Engineering the next generation of neural interfaces and high-performance decentralized systems.",
-        "avatar_url": "/images/avatar.png", # Placeholder
+        "name": "Arno",
+        "title": "Full Stack Developer & AI Engineer",
+        "bio": "Building intelligent systems with modern web technologies",
+        "avatar_url": "/avatar.jpg",
         "status": "System Online"
     }
 
-@router.get("/github-activity", response_model=GithubActivity)
-async def get_github_activity():
+
+@router.get("/system-status", response_model=SystemStatus)
+async def get_system_status():
+    """Get system status"""
     return {
-        "total_commits_year": 2482,
-        "uptime_reliability": 98.4,
-        "active_sprint": "Active"
+        "uptime": "99.9%",
+        "last_deploy": "2026-01-15",
+        "status": "System Online"
     }
+
+
+@router.get("/github-activity", response_model=GithubActivity)
+async def get_github_activity(db: AsyncSession = Depends(get_db)):
+    """
+    Get GitHub contribution heatmap data from database
+    Falls back to live API if database is empty
+    """
+    # Visual range: 32 weeks = 224 days
+    VISUAL_DAYS = 32 * 7
+    
+    try:
+        # Get last 224 days from database
+        result = await db.execute(
+            select(GitHubContribution)
+            .order_by(desc(GitHubContribution.date))
+            .limit(VISUAL_DAYS)
+        )
+        contributions = result.scalars().all()
+        
+        # Get total commits stat
+        stats_result = await db.execute(
+            select(GitHubStats)
+            .where(GitHubStats.stat_key == "total_commits_year")
+        )
+        stats = stats_result.scalar_one_or_none()
+        
+        # If no data, trigger sync and retry
+        if not contributions:
+            print("No GitHub data in database, triggering sync...")
+            await sync_github_contributions()
+            
+            # Retry query
+            result = await db.execute(
+                select(GitHubContribution)
+                .order_by(desc(GitHubContribution.date))
+                .limit(VISUAL_DAYS)
+            )
+            contributions = result.scalars().all()
+            
+            stats_result = await db.execute(
+                select(GitHubStats)
+                .where(GitHubStats.stat_key == "total_commits_year")
+            )
+            stats = stats_result.scalar_one_or_none()
+        
+        # Build heatmap (reverse to get chronological order)
+        heatmap = [
+            {
+                "level": c.contribution_level,
+                "count": c.contribution_count,
+                "date": c.date.isoformat()
+            }
+            for c in reversed(contributions)
+        ]
+        
+        # Pad if needed
+        if len(heatmap) < VISUAL_DAYS:
+            needed = VISUAL_DAYS - len(heatmap)
+            today = datetime.date.today()
+            padding = [
+                {
+                    "level": 1,
+                    "count": 0,
+                    "date": (today - datetime.timedelta(days=VISUAL_DAYS - 1 - i)).isoformat()
+                }
+                for i in range(needed)
+            ]
+            heatmap = padding + heatmap
+        
+        return {
+            "total_commits_year": stats.stat_value if stats else 0,
+            "uptime_reliability": 99.9,
+            "active_sprint": "Active",
+            "heatmap": heatmap
+        }
+        
+    except Exception as e:
+        print(f"Database query error: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Fallback: empty data
+        today = datetime.date.today()
+        heatmap = [
+            {
+                "level": 1,
+                "count": 0,
+                "date": (today - datetime.timedelta(days=VISUAL_DAYS - 1 - i)).isoformat()
+            }
+            for i in range(VISUAL_DAYS)
+        ]
+        
+        return {
+            "total_commits_year": 0,
+            "uptime_reliability": 99.9,
+            "active_sprint": "Active",
+            "heatmap": heatmap
+        }
+
 
 @router.get("/tech-stack", response_model=List[TechStackItem])
 async def get_tech_stack():
+    """Get technology stack"""
     return [
         {"name": "Java", "icon": "coffee", "highlight": False, "description": "Enterprise Backend"},
         {"name": "Python", "icon": "api", "highlight": False, "description": "Backend & AI"},
@@ -69,8 +155,10 @@ async def get_tech_stack():
         {"name": "PostgreSQL", "icon": "database", "highlight": False, "description": "Data Persistence"}
     ]
 
+
 @router.get("/featured-project", response_model=FeaturedProject)
 async def get_featured_project():
+    """Get featured project info"""
     return {
         "title": "DeepSea Vision",
         "description": "Real-time object detection model for autonomous underwater vehicles.",
@@ -79,11 +167,28 @@ async def get_featured_project():
         "tags": ["code", "analytics"]
     }
 
+
 @router.get("/current-focus", response_model=CurrentFocus)
 async def get_current_focus():
+    """Get current focus info"""
     return {
         "topic": "Multi-Agent Systems",
         "subtitle": "Orchestration & Logic",
         "progress": 85,
         "efficiency": 85
     }
+
+
+@router.post("/admin/sync-github")
+async def manual_sync_github():
+
+    """
+    Manually trigger GitHub data synchronization
+    Admin endpoint for testing or force refresh
+    """
+    try:
+        await sync_github_contributions()
+        return {"status": "success", "message": "GitHub data synced successfully"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
