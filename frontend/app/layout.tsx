@@ -1,8 +1,6 @@
 import './globals.css'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import type { Metadata } from 'next'
-import ClientLayout from './components/ClientLayout'
+import { LanguageProvider } from '@/contexts/LanguageContext'
 
 export const metadata: Metadata = {
     title: '量子裂隙',
@@ -11,8 +9,6 @@ export const metadata: Metadata = {
         icon: '/favicon.svg',
     },
 }
-
-import { LanguageProvider } from '@/contexts/LanguageContext'
 
 export default function RootLayout({
     children,
@@ -26,9 +22,9 @@ export default function RootLayout({
                 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
             </head>
             <body className="min-h-screen">
-                <ClientLayout>
+                <LanguageProvider>
                     {children}
-                </ClientLayout>
+                </LanguageProvider>
             </body>
         </html>
     )

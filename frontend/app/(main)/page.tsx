@@ -1,5 +1,3 @@
-'use client'
-
 import HeroCard from './components/HeroCard'
 import ActivityHeatmap from './components/ActivityHeatmap'
 import TechStackCard from './components/TechStackCard'

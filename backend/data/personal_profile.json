@@ -1,0 +1,40 @@
+{
+  "personal_info": {
+    "profile": [
+      "我是 Arno，一名全栈工程师和 AI 应用开发者，专注于构建高效、可扩展的系统。"
+    ],
+    "skills": [
+      "后端开发: Python, FastAPI, Go, Node.js",
+      "AI/ML: RAG, 向量数据库, Prompt Engineering, LangChain",
+      "前端开发: React, Next.js, TypeScript, Vue.js",
+      "基础设施: Docker, Kubernetes, PostgreSQL, Redis"
+    ],
+    "experience": [
+      "5年全栈开发经验",
+      "专注于 AI 应用开发和系统架构设计"
+    ],
+    "contact": [
+      "邮箱: stevearno76@gmail.com"
+    ]
+  },
+  "projects": [
+    {
+      "name": "Personal Homepage",
+      "description": "集成 AI 智能体的个人主页，基于 RAG 技术回答访客问题",
+      "tech_stack": [
+        "FastAPI",
+        "Next.js",
+        "PostgreSQL",
+        "pgvector",
+        "Redis"
+      ],
+      "highlights": [
+        "流式对话",
+        "向量检索",
+        "Rerank 重排序",
+        "多级缓存"
+      ],
+      "url": "https://arnostack.top"
+    }
+  ]
+}

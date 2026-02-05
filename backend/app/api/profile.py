@@ -26,7 +26,7 @@ router = APIRouter()
 async def get_profile_info():
     """Get basic profile information"""
     return {
-        "name": "Arno",
+        "name": "Steve Arno",
         "title": "Full Stack Developer & AI Engineer",
         "bio": "Building intelligent systems with modern web technologies",
         "avatar_url": "/avatar.jpg",
