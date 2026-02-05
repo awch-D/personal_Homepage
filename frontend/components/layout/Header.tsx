@@ -11,10 +11,11 @@ export default function Header() {
                     <span className="font-bold tracking-tighter text-lg uppercase">ARCHITECT</span>
                 </div>
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium opacity-80">
-                    <Link href="#" className="hover:text-primary transition-colors">Nodes</Link>
-                    <Link href="#" className="hover:text-primary transition-colors">Neural Assets</Link>
-                    <Link href="#" className="hover:text-primary transition-colors">Logs</Link>
-                    <Link href="#" className="hover:text-primary transition-colors">Contact</Link>
+                    <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+                    <Link href="/nodes" className="hover:text-primary transition-colors">Nodes</Link>
+                    <Link href="/about" className="hover:text-primary transition-colors">About</Link>
+                    <Link href="/logs" className="hover:text-primary transition-colors">Logs</Link>
+                    <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
